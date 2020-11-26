@@ -117,7 +117,7 @@ object DeltaSequence {
             merged.addRightEdge(oldPositions(v), v)
         }
         val vertices = Lattice.merge(left.vertices, right.vertices)
-        val values   = Lattice.merge(left.values, right.values)(Lattice.mapLattice(noMapConflictsLattice))
+        val values   = Lattice.merge(left.values, right.values)(Lattice.MapAsLattice(noMapConflictsLattice))
 
         DeltaSequence(vertices = vertices, edges = newEdges, values = values.view.filterKeys(vertices.contains).toMap)
       }

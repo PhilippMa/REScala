@@ -8,35 +8,28 @@ trait Lattice[A] {
 }
 
 object Lattice {
-  def apply[A](implicit ev: Lattice[A]): Lattice[A] = ev
-  def merge[A: Lattice](left: A, right: A)          = apply[A].merge(left, right)
+  def apply[A](implicit l: Lattice[A]): Lattice[A] = l
 
-  implicit class LatticeOps[A](val lattice: A) {
-    def merge(other: A)(implicit ev: Lattice[A]): A = ev.merge(lattice, other)
+  def merge[A: Lattice](left: A, right: A): A = Lattice[A].merge(left, right)
+
+  implicit class LatticeOps[A](val a: A) {
+    def merge(other: A)(implicit l: Lattice[A]): A = l.merge(a, other)
   }
 
-  implicit def setInstance[A]: Lattice[Set[A]] =
-    new Lattice[Set[A]] {
-      override def merge(left: Set[A], right: Set[A]): Set[A] = left.union(right)
+  implicit def SetAsLattice[A]: Lattice[Set[A]] =
+    (left: Set[A], right: Set[A]) => left union right
+
+  implicit def OptionAsLattice[A: Lattice]: Lattice[Option[A]] =
+    (left: Option[A], right: Option[A]) => (left, right) match {
+      case (None, r) => r
+      case (l, None) => l
+      case (Some(l), Some(r)) => Some(l merge r)
     }
 
-  implicit def optionLattice[A: Lattice]: Lattice[Option[A]] =
-    new Lattice[Option[A]] {
-      override def merge(left: Option[A], right: Option[A]): Option[A] =
-        (left, right) match {
-          case (None, r)          => r
-          case (l, None)          => l
-          case (Some(l), Some(r)) => Some(Lattice.merge[A](l, r))
-        }
-    }
-
-  implicit def mapLattice[K, V: Lattice]: Lattice[Map[K, V]] =
-    new Lattice[Map[K, V]] {
-      override def merge(left: Map[K, V], right: Map[K, V]): Map[K, V] =
-        (left.keysIterator ++ right.keysIterator)
-          .toSet[K].iterator
-          .flatMap { key =>
-            Lattice.merge(left.get(key), right.get(key)).map(key -> _)
-          }.toMap
+  implicit def MapAsLattice[K, V: Lattice]: Lattice[Map[K, V]] =
+    (left: Map[K, V], right: Map[K, V]) => {
+      (left.keySet ++ right.keySet).flatMap { k =>
+        (left.get(k) merge right.get(k)).map(k -> _)
+      }.toMap
     }
 }
