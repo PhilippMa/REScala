@@ -40,7 +40,8 @@ lazy val rescala = crossProject(JSPlatform, JVMPlatform).in(file("Code/Main"))
     // built in serializability of lattice vertices
     libraryDependencies ++= List(
       "io.circe" %%% s"circe-core"   % "[0.11.0,)" % "provided",
-      "io.circe" %%% s"circe-parser" % "[0.11.0,)" % "provided"
+      "io.circe" %%% s"circe-parser" % "[0.11.0,)" % "provided",
+      "org.typelevel" %% "cats-collections-core" % "0.9.0"
     )
   )
   .jvmSettings()
