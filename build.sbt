@@ -41,7 +41,9 @@ lazy val rescala = crossProject(JSPlatform, JVMPlatform).in(file("Code/Main"))
     libraryDependencies ++= List(
       "io.circe" %%% s"circe-core"   % "[0.11.0,)" % "provided",
       "io.circe" %%% s"circe-parser" % "[0.11.0,)" % "provided",
-      "org.typelevel" %% "cats-collections-core" % "0.9.0"
+      "org.typelevel" %% "cats-collections-core" % "0.9.0",
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core"   % "2.6.2",
+      "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.6.2" % "provided"
     )
   )
   .jvmSettings()
